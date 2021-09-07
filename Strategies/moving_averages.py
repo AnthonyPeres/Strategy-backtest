@@ -33,4 +33,21 @@ def sma(data, short_window=50, long_window=100, make_entry_exit=True):
         # Exit: -1.0
         data['Entree/Sortie'] = data['Signal'].diff()
 
+    
+    #################################################
+    # PLOT                                          #
+    #################################################
+    import hvplot.pandas
+    
+    moving_avgs = data[[column_short_window, column_long_window]].hvplot(ylabel='Price in $', width=1000, height=400)
+    security_close = data[['Close']].hvplot(line_color='lightgray', ylabel='Price in $', width=1000, height=400)
 
+    if make_entry_exit:
+        entry = data[data['Entree/Sortie'] == 1.0]['Close'].hvplot.scatter(color='green', legend=False, ylabel='Price in $', width=1000, height=400)
+        exit = data[data['Entree/Sortie'] == -1.0]['Close'].hvplot.scatter(color='red', legend=False, ylabel='Price in $', width=1000, height=400)
+        entry_exit_plot = security_close * moving_avgs * entry * exit
+    else:
+        entry_exit_plot = security_close * moving_avgs
+    
+    entry_exit_plot.opts(xaxis=None)  
+    hvplot.show(entry_exit_plot)  

@@ -8,7 +8,6 @@ def getData(
     import yfinance as yf
     import pandas as pd
 
-
     data = yf.Ticker(ticker=ticker)
     data = data.history(start=start_date, end=end_date, interval=interval)
     if drop_columns:
