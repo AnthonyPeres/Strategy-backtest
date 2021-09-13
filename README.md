@@ -1,3 +1,3 @@
-# Strategy-backtest
+# Trading-strategy-backtest
 
-Système backtest pour des stratégies de trading.
+Système backtest pour des stratégies de trading avec analyse graphique.
