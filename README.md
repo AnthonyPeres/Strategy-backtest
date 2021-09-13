@@ -1,6 +1,3 @@
-# Trading-automatique
+# Strategy-backtest
 
-Système de trading automatique développé en Python.
-
-
-# TODO:
+Système backtest pour des stratégies de trading.
