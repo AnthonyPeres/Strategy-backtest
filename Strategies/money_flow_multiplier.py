@@ -43,7 +43,10 @@ def money_flow_multiplier(data, make_entry_exit=True):
     else:
         entry_exit_plot = security_close * mfm
     
-    entry_exit_plot.opts(xaxis=None)  
+    if stock_symbol:
+        entry_exit_plot.opts(title=stock_symbol)  
+    else:
+        entry_exit_plot.opts(xaxis=None)  
     hvplot.show(entry_exit_plot)  
 
 

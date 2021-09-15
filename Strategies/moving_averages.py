@@ -1,7 +1,7 @@
 import numpy as np
 import hvplot.pandas
 
-def sma(data, short_window=50, long_window=100, make_entry_exit=True):
+def sma(stock_symbol, data, short_window=50, long_window=100, make_entry_exit=True):
     """
     Fonction qui calcule les moyennes mobiles arithmétique (non exponentielle) avec
     comme période short_window et long_window sur un DataFrame possédant une colonne 'Close'.
@@ -43,5 +43,8 @@ def sma(data, short_window=50, long_window=100, make_entry_exit=True):
     else:
         entry_exit_plot = security_close * moving_avgs
     
-    entry_exit_plot.opts(xaxis=None)  
+    if stock_symbol:
+        entry_exit_plot.opts(title=stock_symbol)  
+    else:
+        entry_exit_plot.opts(xaxis=None)  
     hvplot.show(entry_exit_plot)  

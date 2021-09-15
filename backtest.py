@@ -1,3 +1,6 @@
+import pandas as pd
+import numpy as np
+
 def application_strategie(data, capital_initial=100000, taille_lot=500):
     """
     Génère un tableau global des opérations d'achat et de vente en faisant apparaitre 
@@ -26,7 +29,6 @@ def application_strategie(data, capital_initial=100000, taille_lot=500):
 
 
 
-
 def synthese_portfolio(data, nb_jours_bourse=252):
     """
     Retourne un DataFrame contenant plusieurs indicateurs en relation avec le portefeuille.
@@ -40,9 +42,6 @@ def synthese_portfolio(data, nb_jours_bourse=252):
 
     if not {'Rendement quotidient', 'Rendement cumules'}.issubset(data.columns):
         raise Exception('Colonne(s) Rendement quotidient et/ou Rendement cumules manquante(s) dans le DataFrame.')
-
-    import pandas as pd
-    import numpy as np
 
     # Creation du DataFrame
     indicateurs = [
@@ -76,8 +75,6 @@ def synthese_portfolio(data, nb_jours_bourse=252):
     return synthese_portfolio_df
 
 
-
-
 def synthese_trade(data, symbole):
     """
     - Faites une boucle dans DataFrame, si le commerce « Entrée / Sortie » est égal à 1, définissez les métriques du commerce d'entrée.
@@ -87,9 +84,6 @@ def synthese_trade(data, symbole):
 
     if not {'Entree/Sortie', 'Valeur titres detenus', 'Nombre achat/vente', 'Close'}.issubset(data.columns):
         raise Exception('Une ou plusieurs colonnes manquante(s) dans le DataFrame.')
-
-    import pandas as pd
-    import numpy as np
 
     synthese_trade_df = pd.DataFrame(
         columns=[

@@ -6,7 +6,8 @@ Système backtest pour des stratégies de trading avec analyse graphique.
 ## Les stratégies.
 
 Une stratégie, d'un point de vue données, c'est au minimum :
-| dataFrame en entrée | dataFrame en sortie |
+
+| dataFrame en ENTREE | dataFrame en SORTIE |
 | :------------------ | :------------------ |
 | - Close             | - Signal            |
 |                     | - Entrée/Sortie     |
