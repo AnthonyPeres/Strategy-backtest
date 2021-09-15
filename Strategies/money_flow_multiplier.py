@@ -1,31 +1,53 @@
-def money_flow_multiplier(Data):
-    """
-    En entrée : 
-    - Un DataFrame avec les colonnes Close Low et High
+import yfinance as yf
+import matplotlib.pyplot as plt
+import datetime
+import numpy as np
+import hvplot.pandas
 
-    En sortie : 
-    - Le même DataFrame avec une colonne MFM
-
+def money_flow_multiplier(data, make_entry_exit=True):
+    """ Utilisation de la stratégie Money Flow Multiplier
+    
     La formule de l'indicateur est : 
     MFM = (((Close - Low) - (High - Close)) / (High - Low)) * 100
     """
-    numerateur = ((Data['Close'] - Data['Low']) - (Data['High'] - Data['Close']))
-    denominateur = (Data['High'] - Data['Low'])
+
+    numerateur = ((data['Close'] - data['Low']) - (data['High'] - data['Close']))
+    denominateur = (data['High'] - data['Low'])
 
     for i in range(len(denominateur)):
         if denominateur[i] == 0:
             denominateur[i] = 0.0001
 
-    Data.loc[:, 'MFM'] = (numerateur / denominateur) * 100
-    return Data
+    data.loc[:, 'MFM'] = (numerateur / denominateur) * 100
 
+    if make_entry_exit:
+        # On crée le signal
+        # MFM > 90: -1
+        # MFM < -90: 1
+        # -90 <= MFM <= 90: 0
+        data['Signal'] = np.NaN
+        data.loc[data['MFM'] < -90, 'Signal'] = 1 # Achat
+        data.loc[data['MFM'] > 90, 'Signal'] = -1 # Vente
+        data['Signal'].fillna(method='ffill', inplace=True)
+
+        data['Entree/Sortie'] = data['Signal'].diff() / 2
+
+    # PLOT
+    mfm = data['MFM'].hvplot(ylabel='Price in $', width=1000, height=400)
+    security_close = data[['Close']].hvplot(line_color='lightgray', ylabel='Price in $', width=1000, height=400)
+
+    if make_entry_exit:
+        entry = data[data['Entree/Sortie'] == 1.0]['Close'].hvplot.scatter(color='green', legend=False, ylabel='Price in $', width=1000, height=400)
+        exit = data[data['Entree/Sortie'] == -1.0]['Close'].hvplot.scatter(color='red', legend=False, ylabel='Price in $', width=1000, height=400)
+        entry_exit_plot = security_close * mfm * entry * exit
+    else:
+        entry_exit_plot = security_close * mfm
+    
+    entry_exit_plot.opts(xaxis=None)  
+    hvplot.show(entry_exit_plot)  
 
 
 if __name__ == "__main__":
-    import yfinance as yf
-    import matplotlib.pyplot as plt
-    import datetime
-
     tick_symbol = input("Ticker Symbol: ")
     str_start_date = input("Start Date (YYYY-MM-DD): ")
     str_end_date = input("End Date (YYYY-MM-DD): ")
@@ -34,7 +56,7 @@ if __name__ == "__main__":
     end_date = datetime.datetime.strptime(str_end_date, '%Y-%m-%d')
 
     # Get data from yfinance
-    data = yf.Ticker('AAPL').history(start=start_date, end=end_date)
+    data = yf.Ticker(tick_symbol).history(start=start_date, end=end_date)
 
     # Appli money_flow_multiplier function
     money_flow_multiplier(data)
@@ -42,15 +64,3 @@ if __name__ == "__main__":
     # Display head and tail
     print(data.head())
     print(data.tail())
-
-    # PLOT CLOSE AND MFM
-    fig = plt.figure(figsize=(20,10))
-    ax1 = fig.add_subplot(211)
-    ax1.plot(data['Close'], 'black', label='Close')
-    ax1.grid(True)
-    ax2 = fig.add_subplot(212)
-    ax2.plot(data['MFM'], 'r', label='MFM')
-    ax2.hlines(y=[90,-90], xmin=start_date, xmax=end_date, colors='g', linestyles='--')
-    ax2.grid(True)
-    plt.legend()
-    plt.show()

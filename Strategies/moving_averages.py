@@ -1,3 +1,6 @@
+import numpy as np
+import hvplot.pandas
+
 def sma(data, short_window=50, long_window=100, make_entry_exit=True):
     """
     Fonction qui calcule les moyennes mobiles arithmétique (non exponentielle) avec
@@ -5,13 +8,9 @@ def sma(data, short_window=50, long_window=100, make_entry_exit=True):
 
     Si make_entry_exit = True, la fonction va calculer les points d'entrées et de sorties
     en rapport avec la position relative des deux SMA.
-    """
 
-
-    """ 
-    Faire une exception si on peut pas faire les 2 sma (taille du df trop courte
+    TODO: Faire une exception si on peut pas faire les 2 sma (taille du df trop courte
     """
-    import numpy as np
 
     # On crée les 2 colonnes SMA[short_window] et SMA[long_window]
     column_short_window = 'SMA' + str(short_window)
@@ -32,13 +31,8 @@ def sma(data, short_window=50, long_window=100, make_entry_exit=True):
         # Entry: 1.0
         # Exit: -1.0
         data['Entree/Sortie'] = data['Signal'].diff()
-
     
-    #################################################
-    # PLOT                                          #
-    #################################################
-    import hvplot.pandas
-    
+    # PLOT
     moving_avgs = data[[column_short_window, column_long_window]].hvplot(ylabel='Price in $', width=1000, height=400)
     security_close = data[['Close']].hvplot(line_color='lightgray', ylabel='Price in $', width=1000, height=400)
 
