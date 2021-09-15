@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import hvplot.pandas
+
 
 def application_strategie(data, capital_initial=100000, taille_lot=500):
     """
@@ -26,7 +28,6 @@ def application_strategie(data, capital_initial=100000, taille_lot=500):
     data['Valeur totale du portefeuille'] = data['Valeur titres detenus'] + data['Espece disponible']
     data['Rendement quotidient'] = data['Valeur totale du portefeuille'].pct_change()
     data['Rendement cumules'] = (1 + data['Rendement quotidient']).cumprod() - 1
-
 
 
 def synthese_portfolio(data, nb_jours_bourse=252):
@@ -132,3 +133,28 @@ def synthese_trade(data, symbole):
             )
 
     return synthese_trade_df
+
+
+
+def plot_portfolio_value(data):
+    """Affiche la valeur totale du portefeuille dans le temps
+
+    data doit posséder les colonnes Entree/Sortie et Valeur totale du portefeuille.
+    """
+    
+    if not {'Entree/Sortie', 'Valeur totale du portefeuille'}.issubset(data.columns):
+        raise Exception('Colonne(s) Entree/Sortie et/ou Valeur totale du portefeuille manquante(s) dans le DataFrame.')
+
+    # Visualize exit position relative to total portfolio value
+    exit = data[data['Entree/Sortie'] == -1.0]['Valeur totale du portefeuille'].hvplot.scatter(color='red', legend=False, ylabel='Total Portfolio Value', width=1000, height=400)
+
+    # Visualize entry position relative to total portfolio value
+    entry = data[data['Entree/Sortie'] == 1.0]['Valeur totale du portefeuille'].hvplot.scatter(color='green', legend=False, ylabel='Total Portfolio Value', width=1000, height=400)
+
+    # Visualize total portoflio value for the investment
+    total_portfolio_value = data[['Valeur totale du portefeuille']].hvplot(line_color='lightgray', ylabel='Total Portfolio Value', width=1000, height=400)
+
+    # Overlay plots
+    portfolio_entry_exit_plot = total_portfolio_value * entry * exit
+    portfolio_entry_exit_plot.opts(xaxis=None)
+    hvplot.show(portfolio_entry_exit_plot)  

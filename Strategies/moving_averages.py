@@ -47,4 +47,4 @@ def sma(stock_symbol, data, short_window=50, long_window=100, make_entry_exit=Tr
         entry_exit_plot.opts(title=stock_symbol)  
     else:
         entry_exit_plot.opts(xaxis=None)  
-    hvplot.show(entry_exit_plot)  
+    hvplot.show(entry_exit_plot)

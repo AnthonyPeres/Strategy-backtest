@@ -10,8 +10,11 @@ def getData(
     interval='1d',
     drop_columns=True
 ):
-    data = yf.Ticker(ticker=ticker)
-    data = data.history(start=start_date, end=end_date, interval=interval)
+    t = yf.Ticker(ticker=ticker)
+    history = t.history(start=start_date, end=end_date, interval=interval)
+
+    data = pd.DataFrame(history)
+
     if drop_columns:
         data.drop(columns=['Open', 'High', 'Low', 'Volume', 'Dividends', 'Stock Splits'], inplace=True)
     return data
